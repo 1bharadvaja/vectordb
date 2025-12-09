@@ -13,7 +13,7 @@ namespace vectordb {
 
             std::shared_ptr<Collection> create_collection(const std::string& name, Dimension dim);
 
-            std::shared_ptr<Collection> get_collection(const std::string& name)
+            std::shared_ptr<Collection> get_collection(const std::string& name);
         private:
             Database(std::string root_path);
             std::string root_path_;
