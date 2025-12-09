@@ -7,10 +7,26 @@ class BruteForceIndex : public Index {
     public:
         BruteForceIndex(Dimension dim, DistanceMetric metric): dim_(dim), metric_(metric) {}
         //want to be able to add, delete (maybe), and search
-         int add(VectorID id, const std::vector<float>& v) {
+         void add(VectorID id, const std::vector<float>& v) override {
+            if (v.size() != dim_) {
+                throw std::runtime_error("dim mistmatch")
+            }
+            data_[id] = v;
+         }
 
-        }
+         void remove(VectorID id) override {
+            data_.erase(id)
+         }
 
+         std::vector<std::pair<VectorID, float>> search(const std::vector<float>& query_vector, std::size_t k) const override {
+            //call distance on each vector in data against the query vector
+            //
+            if (query_vector.size() != dim) {
+                throw std::runtime_error("dim mismatch while calling search");
+            }
+
+            
+         }
 
     private:
         Dimension dim_;
