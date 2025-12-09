@@ -7,6 +7,19 @@ struct VectorLocation {
 
 };
 
+class StorageEngine {
+    public:
+
+        StorageEngine(const std::string& path);
+        VectorLocation append_vector(std::vector<float>& vec);
+        std::vector<float> read_vector(const VectorLocation& loc) const;
+
+        void flush();
+    private:
+
+        std::list<VectorLocation> buf_cache; //may want to keep a buffer cache to coalesce writes, not urgent to implement
+        std::unordered_map<VectorID, std::vector<float>> mapping;
+}
 
 
 //disk stuff
