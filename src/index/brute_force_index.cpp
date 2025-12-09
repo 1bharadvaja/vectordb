@@ -1,7 +1,10 @@
 #include "index.hpp"
+#include <queue>
 
 //super basic, just keep all stuff in memory
 //
+
+
 
 class BruteForceIndex : public Index {
     public:
@@ -21,17 +24,53 @@ class BruteForceIndex : public Index {
          std::vector<std::pair<VectorID, float>> search(const std::vector<float>& query_vector, std::size_t k) const override {
             //call distance on each vector in data against the query vector
             //
+            std::priority_queue<std::pair<VectorId, float>, std::vector<std::pair<VectorId, float>>, DistCompare> dists; //minheap implicitly of size k
+
             if (query_vector.size() != dim) {
                 throw std::runtime_error("dim mismatch while calling search");
             }
 
-            
+            //std::vector<std::pair<VectorID, float>> dists;
+            //dists.reserve(data_.size()); 
+
+            for (const auto& [id, vec] : data_) {
+                float dist = distance(vec, query_vector);
+                if (dists.size() >= k) {
+                    if (dist <= dists.top().second) {
+                        dists.pop();
+                        dists.emplace(id, dist);
+                    }
+                } else if (dist < dists.top().second) {
+                    dists.pop();
+                    dists.emplace(id, dist);
+                }
+
+
+                //dists.push_back(id, dist)
+            }
+            //now we have the top k, jusrt need to return contents now
+            std::vector<std::pair<VecId, float>> res;
+            res.reservse(dists.size());
+            while (!dists.empty()) {
+                res.push_back(dists.top()); 
+                dists.pop();
+            }
+            std::reverse(results.begin(), results.end());
+
+            return res;
+
          }
 
     private:
         Dimension dim_;
         DistanceMetric metric_;
         std::unordered_map<VectorID, std::vector<float>> data_; //we store here
+
+        struct DistCompare {
+            bool operator()(const std::pair<VectorId, float>& a, const std::pair<VectorId, float>& b) {
+                return a.second > b.second;
+            }
+        }
 
         float distance(const std::vector<float>& a, const std::vector<float>& b) const {
             switch (metric_) {
