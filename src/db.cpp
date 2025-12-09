@@ -4,8 +4,10 @@
 #include <unordered_map>
 #include "collection.hpp"
 
+//consider making this abstracted, IDatabase, which a class LocalDatabase and a RemoteDatabase can inherit
+
 namespace vectordb {
-    class Database {
+    class Database : public IDatabase{ //this can be the local one, can add the remote one whenever
         public:
             static std::unique_ptr<Database> open(const std::string& path);
 
